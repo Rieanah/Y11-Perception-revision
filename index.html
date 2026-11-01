@@ -1,0 +1,1298 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Perception Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky tab bar over seven panes. Each pane pairs a short explanation with a hands-on demo. Indigo = what arrives (sensation), amber = what the brain adds (perception). */
+:root{
+  --bg:#eef0f7; --panel:#fbfbff; --line:#cdd2e4; --ink:#14152b; --muted:#555a78;
+  --a:#4338ca; --a-ink:#ffffff; --a-soft:#dfe0fb;
+  --b:#c2680a; --b-soft:#fbe6c8;
+  --good:#1f7a43; --good-soft:#d8eedf; --bad:#b3261e; --bad-soft:#f6dcd9;
+  --sky:#cfe3f5; --ground:#b9d6a8; --road:#8d8f99; --tree:#2f8f5b; --trunk:#7a5230; --paper:#ffffff;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1020; --panel:#171a30; --line:#2d3254; --ink:#e9ebfa; --muted:#a2a8cc;
+  --a:#8b9cff; --a-ink:#0c1030; --a-soft:#262c5e;
+  --b:#fbbf24; --b-soft:#4a3510;
+  --good:#6ccd90; --good-soft:#1c3a29; --bad:#ef7d74; --bad-soft:#442421;
+  --sky:#1d2d4d; --ground:#254a30; --road:#4a4d63; --tree:#3fae74; --trunk:#9a6b3f; --paper:#f3f4ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1020; --panel:#171a30; --line:#2d3254; --ink:#e9ebfa; --muted:#a2a8cc;
+  --a:#8b9cff; --a-ink:#0c1030; --a-soft:#262c5e;
+  --b:#fbbf24; --b-soft:#4a3510;
+  --good:#6ccd90; --good-soft:#1c3a29; --bad:#ef7d74; --bad-soft:#442421;
+  --sky:#1d2d4d; --ground:#254a30; --road:#4a4d63; --tree:#3fae74; --trunk:#9a6b3f; --paper:#f3f4ff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1000px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);line-height:1.05;margin:0;text-wrap:balance}
+h1{font-weight:800;font-size:clamp(2.4rem,8vw,4.2rem);letter-spacing:-.02em}
+h2{font-weight:800;font-size:clamp(1.6rem,4.6vw,2.2rem);letter-spacing:-.01em}
+h3{font-weight:600;font-size:1.25rem}
+p{margin:0}
+ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.eyebrow{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+header.top{padding-block:30px 18px;display:grid;gap:10px}
+.lede{max-width:60ch;color:var(--muted);font-size:1.08rem}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--ink);display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{font-family:var(--f-display);font-size:1.05rem;font-weight:600;background:none;border:0;color:var(--muted);padding:12px 14px;cursor:pointer;white-space:nowrap;border-bottom:4px solid transparent;margin-bottom:-2px}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--a)}
+button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+section.pane{padding-block:26px;display:grid;gap:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;display:grid;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px}
+.btn{font-family:var(--f-body);font-weight:600;font-size:.98rem;border-radius:6px;border:2px solid var(--ink);background:var(--panel);color:var(--ink);padding:9px 14px;cursor:pointer}
+.btn.primary{background:var(--a);border-color:var(--a);color:var(--a-ink)}
+.btn[aria-pressed="true"],.btn.on{background:var(--a-soft);border-color:var(--a)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.note{font-size:.93rem;color:var(--muted)}
+.tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:var(--a-soft);padding:2px 8px;border-radius:3px;display:inline-block;width:fit-content}
+.tag.b{background:var(--b-soft)}
+.tag.g{background:var(--good-soft)}
+.def{border-radius:8px;padding:16px;display:grid;gap:8px;border:2px solid var(--a);background:var(--panel)}
+.def.perc{border-color:var(--b)}
+.hook{font-style:italic;color:var(--muted)}
+.callout{background:var(--b-soft);border-left:6px solid var(--b);padding:12px 14px;border-radius:4px}
+.fb{font-size:.95rem;padding:9px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--line)}
+.lab{display:grid;gap:6px;font-size:.95rem}
+.lab span.k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--a)}
+input[type=checkbox],input[type=radio]{accent-color:var(--a);width:18px;height:18px;flex:none}
+.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--f-body);font-weight:600;font-size:.95rem;border:2px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 13px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--a);background:var(--a-soft)}
+svg.dia{width:100%;height:auto;display:block;max-width:640px;margin-inline:auto}
+svg text{font-family:var(--f-body)}
+.sk{stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.skb{stroke:var(--b);fill:none;stroke-width:3;stroke-linecap:round}
+.ska{stroke:var(--a);fill:none;stroke-width:3;stroke-linecap:round}
+.fa{fill:var(--a)}.fb2{fill:var(--b)}.fi{fill:var(--ink)}.fpn{fill:var(--panel)}.fpa{fill:var(--paper)}
+.f-sky{fill:var(--sky)}.f-ground{fill:var(--ground)}.f-road{fill:var(--road)}.f-tree{fill:var(--tree)}.f-trunk{fill:var(--trunk)}
+.st{fill:var(--ink);font-size:12px;font-family:var(--f-mono)}
+.stm{fill:var(--muted);font-size:11px;font-family:var(--f-mono)}
+.stage-box{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.scroll{overflow-x:auto}
+details{border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+details summary{cursor:pointer;padding:14px 16px;font-family:var(--f-display);font-size:1.15rem;font-weight:600}
+details .in{padding:0 16px 16px;display:grid;gap:10px}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pipe button{font-family:var(--f-body);font-size:.88rem;font-weight:600;padding:10px 6px;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;cursor:pointer;display:grid;gap:4px;justify-items:center;line-height:1.2}
+.pipe button .n{font-family:var(--f-display);font-size:1.4rem;font-weight:800}
+.pipe button.s{border-top:6px solid var(--a)}
+.pipe button.p{border-top:6px solid var(--b)}
+.pipe button[aria-pressed="true"]{background:var(--a-soft)}
+.pipe button.p[aria-pressed="true"]{background:var(--b-soft)}
+@media (max-width:560px){.pipe{grid-template-columns:1fr}.pipe button{grid-template-columns:auto 1fr;justify-items:start;text-align:left}}
+.sortcard{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.sortcard.right{background:var(--good-soft);border-color:var(--good)}
+.sortcard.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.sortcard .sub{grid-column:1/-1;font-size:.9rem;color:var(--muted)}
+@media (max-width:560px){.sortcard{grid-template-columns:1fr}}
+.opt{display:block;width:100%;text-align:left;margin-top:6px}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+canvas{max-width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.meter{display:grid;gap:4px}
+.meter .tr{height:16px;background:var(--bg);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.meter .fl{height:100%;background:var(--a)}
+.meter .fl.b{background:var(--b)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.big{font-family:var(--f-display);font-weight:800;font-size:2rem;color:var(--a);line-height:1}
+.pane h2+p,.card>h2+p{max-width:68ch}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">GCSE Psychology · Perception</div>
+  <h1>Perception Lab</h1>
+  <p class="lede">Poke at the demos, change the settings and watch what happens. Every section ends with a quick check so you can see what has stuck.</p>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" id="t-sens" data-tab="sens" aria-selected="true">1 Sensation vs perception</button>
+  <button role="tab" id="t-depth" data-tab="depth" aria-selected="false">2 Depth cues</button>
+  <button role="tab" id="t-gibson" data-tab="gibson" aria-selected="false">3 Gibson</button>
+  <button role="tab" id="t-gregory" data-tab="gregory" aria-selected="false">4 Gregory</button>
+  <button role="tab" id="t-ill" data-tab="ill" aria-selected="false">5 Illusions</button>
+  <button role="tab" id="t-set" data-tab="set" aria-selected="false">6 Perceptual set</button>
+  <button role="tab" id="t-test" data-tab="test" aria-selected="false">7 Test yourself</button>
+</nav>
+
+<!-- ========== 1 SENSATION VS PERCEPTION ========== -->
+<section class="pane" id="p-sens">
+  <div class="card">
+    <h2>Sensation vs perception</h2>
+    <div class="grid2">
+      <div class="def"><span class="tag">Sensation</span><h3>Detecting</h3>
+        <p>Your sense organs pick up raw energy from the world and turn it into electrical signals. For vision, light lands on the retina and receptors (rods and cones) fire. There is no meaning yet, just data.</p>
+        <p class="hook">Like a camera sensor recording dots of light.</p></div>
+      <div class="def perc"><span class="tag b">Perception</span><h3>Interpreting</h3>
+        <p>The brain organises and interprets those signals, using cues, memory and expectation. This is how you end up experiencing objects, distance and meaning.</p>
+        <p class="hook">Like thinking "that is my friend, about five metres away".</p></div>
+    </div>
+    <p class="callout"><b>Memory hook:</b> sensation is what arrives. Perception is what you make of it.</p>
+  </div>
+
+  <div class="card">
+    <h3>Follow the signal</h3>
+    <p class="note">Tap each stage to see where sensation ends and perception begins. The line between them is a simplification, because the stages blend together.</p>
+    <div class="pipe" id="pipe"></div>
+    <div class="fb" id="pipe-text" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <h3>Same sensation, different perception</h3>
+    <p>Read the two words. The middle shape in each is exactly the same.</p>
+    <div class="stage-box"><svg class="dia" viewBox="0 0 520 120" id="hax" role="img" aria-label="The words THE and CAT with an identical ambiguous letter in the middle of each"></svg></div>
+    <div class="row"><button class="btn" id="hax-btn" aria-pressed="false">Prove the shapes are identical</button></div>
+    <div class="fb" id="hax-text">Your eyes receive the same pattern of light twice (sensation). Your brain reads it as H in one word and A in the other (perception), because it expects real words.</div>
+  </div>
+
+  <div class="card">
+    <h3>Sort it</h3>
+    <p class="note">Is each example sensation or perception?</p>
+    <div id="sort-sens" style="display:grid;gap:8px"></div>
+    <div class="fb" id="sort-sens-s"></div>
+  </div>
+
+  <div class="card"><h3>Check it</h3><div id="quiz-sens" style="display:grid;gap:16px"></div><div class="fb" id="quiz-sens-s"></div></div>
+</section>
+
+<!-- ========== 2 DEPTH CUES ========== -->
+<section class="pane" id="p-depth" hidden>
+  <div class="card">
+    <h2>Visual cues</h2>
+    <p>The retina is a flat surface, so the image on it is 2D. The brain works out depth and distance using <b>depth cues</b>. <b>Monocular</b> cues work with one eye. <b>Binocular</b> cues need two.</p>
+  </div>
+
+  <div class="card">
+    <h3>Monocular cues: build a scene</h3>
+    <p class="note">Everything starts switched off. Turn cues on one at a time and watch what changes in the picture.</p>
+    <div class="grid2">
+      <div class="stage-box"><svg class="dia" viewBox="0 0 600 320" id="scene" role="img" aria-label="A scene with three identical trees and a road"></svg></div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <label class="chk"><input type="checkbox" id="c-h"> <span><b>Height in the plane</b></span></label>
+        <label class="chk"><input type="checkbox" id="c-s"> <span><b>Relative size</b></span></label>
+        <label class="chk"><input type="checkbox" id="c-o"> <span><b>Occlusion</b></span></label>
+        <label class="chk"><input type="checkbox" id="c-l"> <span><b>Linear perspective</b></span></label>
+        <div class="meter"><span class="k note" id="scene-n">Cues on: 0 of 4</span><div class="tr"><div class="fl" id="scene-bar" style="width:0"></div></div></div>
+        <div class="fb" id="scene-t" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div><span class="tag">Height in the plane</span><p>Objects higher up in the visual field look further away.</p></div>
+      <div><span class="tag">Relative size</span><p>If two objects are the same real size, the one with the smaller retinal image looks further away.</p></div>
+      <div><span class="tag">Occlusion</span><p>If one object partly blocks another, the blocked one looks further away.</p></div>
+      <div><span class="tag">Linear perspective</span><p>Parallel lines, like railway tracks, seem to meet in the distance. The closer together they look, the further away that part seems.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Binocular cues: retinal disparity and convergence</h3>
+    <p>Your eyes are about 6 cm apart, so each gets a slightly different view. Drag the slider to move the object closer or further.</p>
+    <label class="lab"><span class="k">Distance of object</span><input type="range" id="bd" min="20" max="600" value="60"><span id="bd-v" class="note"></span></label>
+    <div class="grid2">
+      <div class="stage-box"><div class="k note">Top-down view: convergence</div><svg class="dia" viewBox="0 0 400 360" id="conv" role="img" aria-label="Top-down view of two eyes pointing at an object"></svg></div>
+      <div class="stage-box"><div class="k note">What each eye sees: retinal disparity</div><svg class="dia" viewBox="0 0 400 360" id="disp" role="img" aria-label="Left and right eye images of a near object and a far object"></svg></div>
+    </div>
+    <div class="grid2">
+      <div class="fb" id="conv-t"></div>
+      <div class="fb" id="disp-t"></div>
+    </div>
+    <div class="grid2">
+      <div><span class="tag">Retinal disparity</span><p>The difference between the images in the left and right eye. The brain compares them. A <b>bigger difference</b> means the object is <b>closer</b>.</p></div>
+      <div><span class="tag">Convergence</span><p>Your eyes turn inwards to focus on near objects. The brain senses the muscle tension. <b>More inward turn</b> means the object is <b>closer</b>.</p></div>
+    </div>
+    <p class="note">Try it: hold a finger at arm's length and close each eye in turn. Your finger jumps sideways, but the far wall barely moves. Binocular cues work best for things within a few metres.</p>
+  </div>
+
+  <div class="card">
+    <h3>Constancy: size constancy</h3>
+    <p>As someone walks away, the image on your retina gets much smaller. Yet you do not think they are shrinking. <b>Size constancy</b> is perceiving an object as the same size even when its retinal image changes. The brain uses depth cues to scale the size back up.</p>
+    <div class="grid2">
+      <div style="display:grid;gap:10px;align-content:start">
+        <label class="lab"><span class="k">Distance of the person</span><input type="range" id="sc-d" min="2" max="30" value="4"><span class="note" id="sc-dv"></span></label>
+        <label class="chk"><input type="checkbox" id="sc-c" checked> <span>Depth cues available (both eyes, surroundings visible)</span></label>
+        <div class="meter"><span class="note">Retinal image size</span><div class="tr"><div class="fl" id="sc-r"></div></div></div>
+        <div class="meter"><span class="note">Perceived size</span><div class="tr"><div class="fl b" id="sc-p"></div></div></div>
+        <div class="fb" id="sc-t" aria-live="polite"></div>
+      </div>
+      <div class="stage-box"><svg class="dia" viewBox="0 0 400 240" id="sc-svg" role="img" aria-label="A person at the chosen distance"></svg></div>
+    </div>
+    <p class="note">Why this matters: when depth cues are misleading, the brain scales size wrongly and you get illusions such as the Ponzo and the Ames room (see section 5).</p>
+  </div>
+
+  <div class="card"><h3>Check it</h3><div id="quiz-depth" style="display:grid;gap:16px"></div><div class="fb" id="quiz-depth-s"></div></div>
+</section>
+
+<!-- ========== 3 GIBSON ========== -->
+<section class="pane" id="p-gibson" hidden>
+  <div class="card">
+    <h2>Gibson's direct theory</h2>
+    <p>Gibson (1966, 1979) said the real world already contains <b>enough information</b> for us to perceive it <b>directly</b>, with no need for inference, memory or guesses. Perception is <b>bottom-up</b>: it starts with the sensory information and builds up from there.</p>
+    <div class="grid2">
+      <div class="def"><span class="tag">Optic array</span><p>The pattern of light reaching the eye from the environment. It carries rich information such as texture gradients, which get finer with distance.</p></div>
+      <div class="def perc"><span class="tag b">Optic flow</span><p>The pattern of movement you see as you move. Everything seems to stream outwards from the point you are heading towards. Pilots use this to land aircraft.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Optic flow</h3>
+    <p class="note">Press play and move forwards. Speed up and the flow gets faster. Move backwards and it reverses.</p>
+    <canvas id="flow" width="560" height="320" aria-label="Dots streaming outwards from a central point"></canvas>
+    <div class="row"><button class="btn primary" id="flow-btn">Pause</button>
+      <label class="lab" style="flex:1;min-width:200px"><span class="k">Speed (negative = moving backwards)</span><input type="range" id="flow-s" min="-3" max="3" step="0.5" value="1.5"></label></div>
+  </div>
+
+  <div class="card">
+    <h3>Motion parallax</h3>
+    <p>When you move your head or travel, <b>near objects seem to move fast and far objects seem to move slowly</b>. The brain reads depth straight from this. Drag the slider as if you were walking past.</p>
+    <div class="stage-box"><svg class="dia" viewBox="0 0 560 240" id="par" role="img" aria-label="Three layers: mountains, houses and a fence, moving at different speeds"></svg></div>
+    <label class="lab"><span class="k">Your position (walk left to right)</span><input type="range" id="par-s" min="-100" max="100" value="0"></label>
+    <div class="row"><button class="btn" id="par-btn">Walk automatically</button></div>
+    <div class="fb" id="par-t" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <h3>Evaluating Gibson</h3>
+    <div class="grid2">
+      <div><b>Strengths</b><ul><li>Real-world applications. Pilot training uses optic flow and texture gradients.</li><li>Explains everyday perception of movement and depth, which happens fast.</li><li>Studies real scenes, so it has high ecological validity.</li></ul></div>
+      <div><b>Weaknesses</b><ul><li>Cannot explain visual illusions. Gibson said these are artificial 2D drawings missing real-world cues.</li><li>Ignores the role of memory, expectation and experience (perceptual set).</li><li>Does not say how the brain actually picks up the information.</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Check it</h3><div id="quiz-gibson" style="display:grid;gap:16px"></div><div class="fb" id="quiz-gibson-s"></div></div>
+</section>
+
+<!-- ========== 4 GREGORY ========== -->
+<section class="pane" id="p-gregory" hidden>
+  <div class="card">
+    <h2>Gregory's constructivist theory</h2>
+    <p>Gregory (1970) said the information reaching the eye is often incomplete or ambiguous, so the brain <b>constructs</b> a model of reality. It uses <b>inferences</b> from visual cues and <b>past experience</b> to form a best guess, called a <b>perceptual hypothesis</b>. Perception is <b>top-down</b>: knowledge shapes what we see.</p>
+    <div class="grid3">
+      <div class="def"><span class="tag">1 Cues</span><p>Incomplete signals arrive from the retina.</p></div>
+      <div class="def perc"><span class="tag b">2 Past experience</span><p>The brain checks them against stored knowledge.</p></div>
+      <div class="def"><span class="tag">3 Hypothesis</span><p>It picks the most likely explanation. Usually it is right. Sometimes it is wrong, and that is an illusion.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Make a hypothesis</h3>
+    <p class="note">A mystery object is drawn from dots. Slide up the amount of information and guess as early as you can. What you guess with so little to go on comes from your past experience.</p>
+    <div class="grid2">
+      <canvas id="hyp" width="280" height="280" aria-label="Dots forming a hidden object"></canvas>
+      <div style="display:grid;gap:10px;align-content:start">
+        <label class="lab"><span class="k">Information available</span><input type="range" id="hyp-s" min="2" max="100" value="4"><span class="note" id="hyp-v"></span></label>
+        <div class="chips" id="hyp-opts"></div>
+        <div class="fb" id="hyp-t" aria-live="polite">Make your best guess.</div>
+        <div class="row"><button class="btn" id="hyp-new">New mystery object</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Gibson or Gregory?</h3>
+    <div class="scroll"><table>
+      <tr><th></th><th>Gibson (direct)</th><th>Gregory (constructivist)</th></tr>
+      <tr><td>Direction</td><td>Bottom-up</td><td>Top-down</td></tr>
+      <tr><td>Inference</td><td>None needed</td><td>Central: the brain infers</td></tr>
+      <tr><td>Past experience</td><td>Not needed</td><td>Essential</td></tr>
+      <tr><td>Visual illusions</td><td>Cannot explain. Says they are artificial.</td><td>Main evidence: wrong hypotheses</td></tr>
+      <tr><td>Best for</td><td>Everyday movement and depth</td><td>Illusions, ambiguity, perceptual set</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Evaluating Gregory</h3>
+    <div class="grid2">
+      <div><b>Strengths</b><ul><li>Explains why visual illusions happen.</li><li>Explains perceptual set, culture and expectation effects (section 6).</li><li>Explains how we cope with incomplete or ambiguous information.</li></ul></div>
+      <div><b>Weaknesses</b><ul><li>Perception is usually fast and accurate, even for new things. A guessing system should make more mistakes.</li><li>Illusions use artificial stimuli, so they may not show how perception works in real life.</li><li>Gibson argues the real world already holds enough information.</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Check it</h3><div id="quiz-gregory" style="display:grid;gap:16px"></div><div class="fb" id="quiz-gregory-s"></div></div>
+</section>
+
+<!-- ========== 5 ILLUSIONS ========== -->
+<section class="pane" id="p-ill" hidden>
+  <div class="card">
+    <h2>Visual illusions</h2>
+    <p>An illusion is when what you perceive does not match reality. Pick one, play with it, then read why it happens. Four explanations are used: <b>ambiguity</b>, <b>misinterpreted depth cues</b>, <b>fiction</b> and <b>size constancy</b>.</p>
+    <div class="chips" id="ill-chips"></div>
+  </div>
+  <div class="card" id="ill-stage"></div>
+  <div class="card">
+    <h3>Which explanation fits?</h3>
+    <div class="scroll"><table>
+      <tr><th>Illusion</th><th>Ambiguity</th><th>Misinterpreted depth cues</th><th>Fiction</th><th>Size constancy</th></tr>
+      <tr><td>Ponzo</td><td></td><td>Yes</td><td></td><td>Yes</td></tr>
+      <tr><td>Müller-Lyer</td><td></td><td>Yes</td><td></td><td>Yes</td></tr>
+      <tr><td>Rubin's vase</td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>Necker cube</td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>Kanizsa triangle</td><td></td><td></td><td>Yes</td><td></td></tr>
+      <tr><td>Ames room</td><td></td><td>Yes</td><td></td><td>Yes</td></tr>
+    </table></div>
+    <p class="note">Gregory explains these as wrong hypotheses. Gibson says they are artificial, with no motion or binocular cues. Several of them (the Ames room especially) only work when viewed with one eye from a fixed point.</p>
+  </div>
+  <div class="card"><h3>Check it</h3><div id="quiz-ill" style="display:grid;gap:16px"></div><div class="fb" id="quiz-ill-s"></div></div>
+</section>
+
+<!-- ========== 6 PERCEPTUAL SET ========== -->
+<section class="pane" id="p-set" hidden>
+  <div class="card">
+    <h2>Perceptual set and what shapes it</h2>
+    <p><b>Perceptual set</b> is a mental readiness to perceive something in a particular way. It is shaped by <b>expectation</b>, <b>motivation</b>, <b>emotion</b> and <b>culture</b>. It fits Gregory's idea that past experience guides perception.</p>
+    <div class="chips" id="set-chips"></div>
+  </div>
+
+  <div class="card" id="set-expect">
+    <span class="tag b">Expectation</span><h2>Bruner and Minturn (1955)</h2>
+    <p><b>Aim:</b> to see if expectation affects how an ambiguous figure is perceived.</p>
+    <p><b>Method:</b> participants were shown a figure that could be the letter B or the number 13. Some saw it in a sequence of letters, others in a sequence of numbers.</p>
+    <div class="grid2">
+      <div class="stage-box"><svg class="dia" viewBox="0 0 300 100" id="bm-svg" role="img" aria-label="Ambiguous figure between other characters"></svg></div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="chips"><button class="chip" data-bm="letters" aria-pressed="true">Letters shown first</button><button class="chip" data-bm="numbers" aria-pressed="false">Numbers shown first</button></div>
+        <div class="fb" id="bm-t"></div>
+      </div>
+    </div>
+    <p><b>Results:</b> those shown letters tended to see the figure as <b>B</b>. Those shown numbers tended to see <b>13</b>.</p>
+    <p><b>Conclusion:</b> expectation sets us up to perceive an ambiguous stimulus in a particular way.</p>
+    <div class="callout"><b>Try your own expectation.</b> Read this phrase once, then answer.</div>
+    <div class="stage-box" style="text-align:center;font-family:var(--f-mono);font-size:1.3rem" id="dw-phrase"></div>
+    <div class="row" id="dw-opts"></div>
+    <div class="fb" id="dw-t" hidden></div>
+    <p class="note"><b>Evaluation:</b> a controlled experiment, but the figure is artificial, so it may not reflect real life.</p>
+  </div>
+
+  <div class="card" id="set-motive" hidden>
+    <span class="tag b">Motivation</span><h2>Gilchrist and Nesberg (1952)</h2>
+    <p><b>Aim:</b> to see if need (hunger and thirst) changes how bright need-related pictures look.</p>
+    <p><b>Method:</b> participants went without food or water for different lengths of time. They then adjusted the brightness of projected pictures, some of food and drink and some of other things, until they matched what they saw.</p>
+    <label class="lab"><span class="k">Hours without food</span><input type="range" id="gn-s" min="0" max="20" value="0"><span class="note" id="gn-v"></span></label>
+    <div class="two">
+      <div class="meter"><span class="note">Brightness set for <b>food</b> pictures</span><div class="tr"><div class="fl b" id="gn-f"></div></div></div>
+      <div class="meter"><span class="note">Brightness set for <b>neutral</b> pictures</span><div class="tr"><div class="fl" id="gn-n"></div></div></div>
+    </div>
+    <p class="note">This slider shows the shape of the finding, not the original numbers.</p>
+    <p><b>Results:</b> the longer participants had gone without, the brighter they rated pictures of food or drink. Neutral pictures were not affected.</p>
+    <p><b>Conclusion:</b> motivation changes perception. Things that meet our needs seem more vivid.</p>
+    <p class="note"><b>Evaluation:</b> deprivation raises ethical concerns. Brightness matching is subjective, and the lab setting was artificial.</p>
+  </div>
+
+  <div class="card" id="set-emotion" hidden>
+    <span class="tag b">Emotion</span><h2>Kunst-Wilson and Zajonc (1980)</h2>
+    <p><b>Aim:</b> to see if emotion (liking) can be influenced by shapes we have seen, even if we do not know we saw them.</p>
+    <p><b>Method:</b> participants saw irregular shapes flashed for just 1 millisecond. Later they saw pairs, one old and one new. They said which they <b>liked more</b> and which they had <b>seen before</b>.</p>
+    <div class="grid2">
+      <div class="meter"><span class="note">Correct at saying which was seen (about 48%, chance level)</span><div class="tr"><div class="fl" style="width:48%"></div></div></div>
+      <div class="meter"><span class="note">Preferred the old shape (about 60%)</span><div class="tr"><div class="fl b" style="width:60%"></div></div></div>
+    </div>
+    <p><b>Conclusion:</b> people liked the shapes they had seen even though they could not recognise them. Emotion can shape perception without awareness (the mere exposure effect).</p>
+    <div class="callout"><b>Try a mini version.</b> Five shapes are flashed very briefly. Then you choose between old and new pairs. With so few trials, chance will matter more than in the real study.</div>
+    <div class="stage-box" style="min-height:200px"><svg class="dia" viewBox="0 0 400 180" id="kw-svg" role="img" aria-label="Shapes for the mini experiment"></svg></div>
+    <div class="row"><button class="btn primary" id="kw-start">Start the mini experiment</button></div>
+    <div class="fb" id="kw-t" aria-live="polite">Press start. Watch the centre of the box.</div>
+    <p class="note"><b>Evaluation:</b> a lab study with meaningless shapes, so it lacks ecological validity. It was a controlled experiment, so the cause and effect is clear.</p>
+  </div>
+
+  <div class="card" id="set-culture" hidden>
+    <span class="tag b">Culture</span><h2>Nisbett and Miyamoto (2005)</h2>
+    <p><b>Aim:</b> to review whether culture affects how people perceive scenes.</p>
+    <p><b>Findings:</b> people from East Asian cultures such as Japan tend to perceive <b>holistically</b>, paying attention to the context and the relationships between things. Westerners, such as Americans, tend to perceive <b>analytically</b>, focusing on the main object and separating it from its background.</p>
+    <div class="grid2">
+      <div class="stage-box"><svg class="dia" viewBox="0 0 400 240" id="fish" role="img" aria-label="A large fish among smaller fish and plants"></svg></div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="chips"><button class="chip" data-fish="analytic" aria-pressed="true">Analytic: focus on the object</button><button class="chip" data-fish="holistic" aria-pressed="false">Holistic: take in the whole scene</button></div>
+        <div class="fb" id="fish-t"></div>
+      </div>
+    </div>
+    <div class="callout"><b>Frame-and-line task</b> (the sort of task used in this research, for example by Kitayama and colleagues, 2003). Look at the line in the first frame, then redraw it in a new frame.</div>
+    <div id="fl-box" class="grid2">
+      <div class="stage-box"><svg class="dia" viewBox="0 0 220 220" id="fl-svg" role="img" aria-label="A square frame with a line inside"></svg></div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="chips"><button class="chip" data-flm="abs" aria-pressed="true">Absolute: same length</button><button class="chip" data-flm="rel" aria-pressed="false">Relative: same proportion of the frame</button></div>
+        <div class="row"><button class="btn primary" id="fl-next">Show the new frame</button></div>
+        <label class="lab" id="fl-lab" hidden><span class="k">Line length</span><input type="range" id="fl-s" min="10" max="150" value="60"></label>
+        <div class="row"><button class="btn" id="fl-check" hidden>Check my answer</button></div>
+        <div class="fb" id="fl-t" aria-live="polite">Choose a task type, then press the button.</div>
+      </div>
+    </div>
+    <p>Research reviewed in this area found East Asian participants tended to do better at the relative version, and Americans at the absolute one.</p>
+    <p class="note"><b>Evaluation:</b> shows culture shapes perception, which supports Gregory. But the groups are broad, it is correlational, and the tasks are artificial.</p>
+  </div>
+
+  <div class="card">
+    <h3>How this connects</h3>
+    <p>All four studies show that perception is not just a copy of the sensory input. Experience, needs, feelings and culture all change what we perceive. This supports <b>Gregory's top-down theory</b> and is a challenge for Gibson's purely direct view.</p>
+  </div>
+  <div class="card"><h3>Check it</h3><div id="quiz-set" style="display:grid;gap:16px"></div><div class="fb" id="quiz-set-s"></div></div>
+</section>
+
+<!-- ========== 7 TEST ========== -->
+<section class="pane" id="p-test" hidden>
+  <div class="card">
+    <h2>Test yourself</h2>
+    <p class="note">Work through the four sorting games, then the mixed quiz and the exam questions.</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Gibson or Gregory?</h3><div id="sort-theory" style="display:grid;gap:8px"></div><div class="fb" id="sort-theory-s"></div></div>
+    <div class="card"><h3>Monocular or binocular?</h3><div id="sort-cue" style="display:grid;gap:8px"></div><div class="fb" id="sort-cue-s"></div></div>
+    <div class="card"><h3>Which factor?</h3><div id="sort-factor" style="display:grid;gap:8px"></div><div class="fb" id="sort-factor-s"></div></div>
+    <div class="card"><h3>Which explanation of the illusion?</h3><div id="sort-ill" style="display:grid;gap:8px"></div><div class="fb" id="sort-ill-s"></div></div>
+  </div>
+  <div class="card"><h2>Mixed quiz</h2><div id="quiz-mix" style="display:grid;gap:18px"></div><div class="fb" id="quiz-mix-s"></div></div>
+  <div class="card">
+    <h2>Exam practice</h2>
+    <div id="exam" style="display:grid;gap:20px"></div>
+  </div>
+  <p class="note">Check dates and figures against your class notes and exam board specification.</p>
+</section>
+</div>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function rng(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+
+/* ---------- generic quiz ---------- */
+function quiz(id,items){
+  var box=$("#"+id),score=$("#"+id+"-s"),done=0,right=0;
+  items.forEach(function(d,qi){
+    var q=el("div");q.appendChild(el("p",null,(qi+1)+". "+d.q));
+    var fb=el("div","fb");fb.hidden=true;fb.style.marginTop="8px";var bs=[];
+    d.o.forEach(function(t,oi){
+      var b=el("button","btn opt",t);bs.push(b);
+      b.addEventListener("click",function(){
+        if(q.dataset.d)return;q.dataset.d="1";done++;
+        bs.forEach(function(x,j){x.disabled=true;if(j===d.a)x.classList.add("right")});
+        if(oi===d.a)right++;else b.classList.add("wrong");
+        fb.hidden=false;fb.textContent=(oi===d.a?"Correct. ":"Not quite. ")+d.e;
+        score.textContent="Score: "+right+" / "+done+" answered ("+items.length+" questions)";
+      });
+      q.appendChild(b);
+    });
+    q.appendChild(fb);box.appendChild(q);
+  });
+  score.textContent="Score: 0 / 0 answered ("+items.length+" questions)";
+}
+
+/* ---------- generic sorter ---------- */
+function sorter(id,items,opts){
+  var box=$("#"+id),score=$("#"+id+"-s"),done=0,right=0;
+  items.forEach(function(it){
+    var c=el("div","sortcard");c.appendChild(el("span",null,it[0]));
+    var r=el("div","row");
+    opts.forEach(function(o){
+      var b=el("button","btn",o[0]);
+      b.addEventListener("click",function(){
+        if(c.dataset.d)return;c.dataset.d="1";done++;
+        var ok=o[1]===it[1];if(ok)right++;
+        c.className="sortcard "+(ok?"right":"wrong");
+        $$("button",r).forEach(function(x){x.disabled=true});
+        var ans=opts.filter(function(x){return x[1]===it[1]})[0][0];
+        c.appendChild(el("span","sub",(ok?"Correct. ":"Not quite, it is "+ans+". ")+(it[2]||"")));
+        score.textContent="Score: "+right+" / "+done+" answered ("+items.length+" cards)";
+      });
+      r.appendChild(b);
+    });
+    c.appendChild(r);box.appendChild(c);
+  });
+  score.textContent="Score: 0 / 0 answered ("+items.length+" cards)";
+}
+
+/* ---------- tabs ---------- */
+var TABS=["sens","depth","gibson","gregory","ill","set","test"];
+var onShow={};
+function showTab(id){
+  if(TABS.indexOf(id)<0)id="sens";
+  TABS.forEach(function(t){
+    $("#p-"+t).hidden=(t!==id);
+    $("#t-"+t).setAttribute("aria-selected",t===id?"true":"false");
+  });
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+  window.scrollTo(0,0);
+  if(window.__flowStop)window.__flowStop();
+  if(onShow[id])onShow[id]();
+}
+TABS.forEach(function(t){$("#t-"+t).addEventListener("click",function(){showTab(t)})});
+
+/* ================= 1 SENSATION VS PERCEPTION ================= */
+var PIPE=[
+  ["Light reflects off the mug","Light waves bounce off the mug and travel to your eye. This is energy in the environment.","s"],
+  ["Light focuses on the retina","The lens focuses an upside-down 2D image onto the retina at the back of the eye.","s"],
+  ["Receptors fire","Rods and cones turn light into electrical signals. This is the sensory data. It is sensation.","s"],
+  ["Signals reach the brain","The optic nerve carries the signals to the visual cortex. This is where organising the data begins.","p"],
+  ["The brain interprets","The brain uses cues and past experience to decide: that is my mug, it is full, and it is within reach. This is perception.","p"]
+];
+(function(){
+  var pipe=$("#pipe"),txt=$("#pipe-text");
+  function pick(i){
+    $$("button",pipe).forEach(function(b,j){b.setAttribute("aria-pressed",i===j?"true":"false")});
+    var d=PIPE[i];
+    txt.textContent="";
+    var tag=el("span","tag"+(d[2]==="p"?" b":""),d[2]==="s"?"Sensation":"Perception");
+    txt.appendChild(tag);txt.appendChild(document.createTextNode(" "+d[1]));
+  }
+  PIPE.forEach(function(d,i){
+    var b=el("button",d[2]);b.setAttribute("aria-pressed","false");
+    b.appendChild(el("span","n",String(i+1)));b.appendChild(el("span",null,d[0]));
+    b.addEventListener("click",function(){pick(i)});pipe.appendChild(b);
+  });
+  pick(0);
+})();
+
+(function(){
+  var svg=$("#hax"),on=false;
+  function glyph(x,hl){
+    return '<g transform="translate('+x+',30)" stroke-width="7" class="sk" style="stroke:'+(hl?"var(--b)":"var(--ink)")+'">'+
+      '<line x1="4" y1="64" x2="9" y2="4"/><line x1="31" y1="64" x2="26" y2="4"/><line x1="7" y1="42" x2="28" y2="42"/></g>';
+  }
+  function T(x,ch){return '<text x="'+x+'" y="94" font-size="64" font-weight="800" class="fi">'+ch+'</text>'}
+  function draw(){
+    var s='';
+    s+=T(30,"T")+glyph(88,on)+T(130,"E");
+    s+=T(290,"C")+glyph(340,on)+T(382,"T");
+    if(on){s+='<line x1="105" y1="108" x2="357" y2="108" stroke-dasharray="4 4" style="stroke:var(--b)" stroke-width="2"/><text x="190" y="118" class="st">identical</text>'}
+    svg.innerHTML=s;
+  }
+  $("#hax-btn").addEventListener("click",function(){
+    on=!on;this.setAttribute("aria-pressed",on?"true":"false");
+    this.textContent=on?"Hide the highlight":"Prove the shapes are identical";draw();
+  });
+  draw();
+})();
+
+sorter("sort-sens",[
+  ["Light hitting the receptors in your retina","S","Raw detection of energy."],
+  ["Recognising your friend's face in a crowd","P","Interpreting with memory."],
+  ["Rods and cones firing electrical signals","S","Receptors converting light into signals."],
+  ["Realising the red blob is a bus and that it is far away","P","Meaning and depth, added by the brain."],
+  ["Sound waves vibrating your eardrum","S","Raw physical detection."],
+  ["Hearing those sound waves as someone saying your name","P","Making sense of the input."],
+  ["Seeing a 3D room from a flat image on the retina","P","The brain builds depth."],
+  ["Warmth detected by skin receptors","S","Detection, no meaning yet."]
+],[["Sensation","S"],["Perception","P"]]);
+quiz("quiz-sens",[
+  {q:"Which best describes sensation?",o:["Making sense of what you see","Detecting energy and sending signals to the brain","Remembering what an object is","Imagining what is not there"],a:1,e:"Sensation is detection of raw energy by receptors. Perception is the interpretation."},
+  {q:"The same pattern of light is read as H in THE and A in CAT. This shows that:",o:["The eyes are faulty","Perception depends on more than the sensory input","Sensation changes the pattern","Receptors are context-sensitive"],a:1,e:"The sensory input was identical. The brain's interpretation used context, which is perception."},
+  {q:"Which stage is perception?",o:["Light enters the pupil","Receptors in the retina fire","The brain decides the shape is a mug","Light is focused by the lens"],a:2,e:"Deciding what something is happens in the brain, and that is interpretation."}
+]);
+
+/* ================= 2 DEPTH CUES ================= */
+(function(){
+  var svg=$("#scene");
+  function tree(x,yb,s){
+    var tw=10*s,th=36*s;
+    return '<rect x="'+(x-tw/2)+'" y="'+(yb-th)+'" width="'+tw+'" height="'+th+'" class="f-trunk"/>'+
+           '<ellipse cx="'+x+'" cy="'+(yb-th-30*s)+'" rx="'+(32*s)+'" ry="'+(42*s)+'" class="f-tree"/>';
+  }
+  function draw(){
+    var on={h:$("#c-h").checked,s:$("#c-s").checked,o:$("#c-o").checked,l:$("#c-l").checked};
+    var H=120,s='';
+    s+='<rect width="600" height="'+H+'" class="f-sky"/><rect y="'+H+'" width="600" height="200" class="f-ground"/>';
+    if(on.l){
+      s+='<polygon points="294,'+H+' 306,'+H+' 560,320 40,320" class="f-road"/>';
+      for(var i=1;i<=9;i++){
+        var t=Math.pow(i/9,2.2),y=H+(320-H)*t,hw=6+(260-6)*((y-H)/(320-H));
+        s+='<line x1="'+(300-hw)+'" y1="'+y+'" x2="'+(300+hw)+'" y2="'+y+'" class="sk" style="stroke:var(--paper)" stroke-width="3"/>';
+      }
+    }else{
+      s+='<rect x="200" y="'+(H+6)+'" width="200" height="194" class="f-road"/>';
+      for(var j=1;j<=9;j++){var yy=H+6+j*19.4;s+='<line x1="200" y1="'+yy+'" x2="400" y2="'+yy+'" class="sk" style="stroke:var(--paper)" stroke-width="3"/>'}
+    }
+    var far={x:on.o?270:480,y:on.h?165:290,s:on.s?0.4:1};
+    var mid={x:on.o?292:300,y:on.h?215:290,s:on.s?0.62:1};
+    var near={x:on.o?322:120,y:290,s:1};
+    s+=tree(far.x,far.y,far.s)+tree(mid.x,mid.y,mid.s)+tree(near.x,near.y,near.s);
+    svg.innerHTML=s;
+    var n=(on.h?1:0)+(on.s?1:0)+(on.o?1:0)+(on.l?1:0);
+    $("#scene-n").textContent="Cues on: "+n+" of 4";$("#scene-bar").style.width=(n*25)+"%";
+    var t=["No cues. Three identical trees and a flat ladder. Nothing says which tree is nearest.",
+      "One cue. Some depth is suggested, but it is easy to be fooled.",
+      "Two cues. Depth is getting clearer.",
+      "Three cues. The scene is convincing.",
+      "All four cues together. The brain combines them into a confident sense of depth."][n];
+    var parts=[];if(on.h)parts.push("Height: higher trees look further.");if(on.s)parts.push("Size: smaller trees look further.");if(on.o)parts.push("Occlusion: the tree that blocks another looks nearer.");if(on.l)parts.push("Linear perspective: the road lines meet at the horizon.");
+    $("#scene-t").textContent=t+(parts.length?" "+parts.join(" "):"");
+  }
+  ["c-h","c-s","c-o","c-l"].forEach(function(id){$("#"+id).addEventListener("change",draw)});
+  draw();
+})();
+
+(function(){
+  var IPD=6.3;
+  var conv=$("#conv"),disp=$("#disp");
+  function draw(){
+    var d=+$("#bd").value;
+    $("#bd-v").textContent=d>=100?(d/100).toFixed(1)+" metres away":d+" cm away";
+    var ang=2*Math.atan((IPD/2)/d)*180/Math.PI;
+    var oy=90+260*Math.log(d/20)/Math.log(30)*0.85;
+    var ex1=150,ex2=250,ey=40,ox=200;
+    var s='';
+    s+='<circle cx="'+ex1+'" cy="'+ey+'" r="18" class="fpn sk"/><circle cx="'+ex2+'" cy="'+ey+'" r="18" class="fpn sk"/>';
+    var a1=Math.atan2(oy-ey,ox-ex1),a2=Math.atan2(oy-ey,ox-ex2);
+    s+='<circle cx="'+(ex1+9*Math.cos(a1))+'" cy="'+(ey+9*Math.sin(a1))+'" r="7" class="fi"/><circle cx="'+(ex2+9*Math.cos(a2))+'" cy="'+(ey+9*Math.sin(a2))+'" r="7" class="fi"/>';
+    s+='<line x1="'+ex1+'" y1="'+ey+'" x2="'+ox+'" y2="'+oy+'" class="ska"/><line x1="'+ex2+'" y1="'+ey+'" x2="'+ox+'" y2="'+oy+'" class="ska"/>';
+    s+='<circle cx="'+ox+'" cy="'+oy+'" r="10" class="fb2"/>';
+    s+='<text x="200" y="'+(oy+28)+'" text-anchor="middle" class="st">'+ang.toFixed(1)+'° between eyes</text>';
+    s+='<text x="150" y="14" text-anchor="middle" class="stm">left eye</text><text x="250" y="14" text-anchor="middle" class="stm">right eye</text>';
+    conv.innerHTML=s;
+    $("#conv-t").textContent="Convergence: the eyes turn inwards by about "+ang.toFixed(1)+"° in total. "+(d<80?"That is a lot of muscle tension, so the brain reads the object as close.":d<250?"A moderate turn, so a medium distance.":"Almost parallel, so the object is far away.");
+    var sh=36*(20/d);
+    var s2='';
+    function panel(x0,label,sign){
+      var o='<rect x="'+x0+'" y="30" width="180" height="200" rx="6" class="fpn sk"/>';
+      o+='<text x="'+(x0+90)+'" y="22" text-anchor="middle" class="st">'+label+'</text>';
+      o+='<line x1="'+(x0+90)+'" y1="30" x2="'+(x0+90)+'" y2="230" stroke-dasharray="3 4" style="stroke:var(--line)" stroke-width="2"/>';
+      o+='<circle cx="'+(x0+90+sign*sh)+'" cy="160" r="16" class="fb2"/>';
+      o+='<polygon points="'+(x0+90)+',80 '+(x0+78)+',110 '+(x0+102)+',110" class="f-tree"/>';
+      return o;
+    }
+    s2+=panel(10,"Left eye",1)+panel(210,"Right eye",-1);
+    s2+='<line x1="'+(100+sh)+'" y1="262" x2="'+(300-sh)+'" y2="262" class="skb"/>';
+    s2+='<text x="200" y="290" text-anchor="middle" class="st">near ball shifts by '+(2*sh).toFixed(0)+' units</text>';
+    s2+='<text x="200" y="312" text-anchor="middle" class="stm">far tree shifts by ~0</text>';
+    disp.innerHTML=s2;
+    $("#disp-t").textContent="Retinal disparity: the ball appears in different places in the two eyes ("+(2*sh).toFixed(0)+" units apart). The far tree is in almost the same place in both. A big difference means close.";
+  }
+  $("#bd").addEventListener("input",draw);draw();
+})();
+
+(function(){
+  var svg=$("#sc-svg");
+  function person(cx,base,h,fill){
+    var head=h*0.14,body=h*0.5,leg=h*0.36;
+    return '<circle cx="'+cx+'" cy="'+(base-h+head)+'" r="'+head+'" class="'+fill+'"/>'+
+      '<rect x="'+(cx-head*1.2)+'" y="'+(base-h+head*2)+'" width="'+(head*2.4)+'" height="'+body+'" rx="4" class="'+fill+'"/>'+
+      '<rect x="'+(cx-head*1.0)+'" y="'+(base-leg)+'" width="'+(head*0.8)+'" height="'+leg+'" class="'+fill+'"/>'+
+      '<rect x="'+(cx+head*0.2)+'" y="'+(base-leg)+'" width="'+(head*0.8)+'" height="'+leg+'" class="'+fill+'"/>';
+  }
+  function draw(){
+    var d=+$("#sc-d").value,cues=$("#sc-c").checked;
+    $("#sc-dv").textContent=d+" metres";
+    var ret=2/d, perc=cues?1:ret;
+    $("#sc-r").style.width=(ret*100)+"%";$("#sc-p").style.width=(perc*100)+"%";
+    var s='<line x1="20" y1="215" x2="380" y2="215" class="sk"/>';
+    s+='<text x="100" y="20" text-anchor="middle" class="st">Retinal image</text><text x="300" y="20" text-anchor="middle" class="st">What you perceive</text>';
+    s+=person(100,215,170*ret,"fa");
+    s+=person(300,215,170*perc,"fb2");
+    svg.innerHTML=s;
+    $("#sc-t").textContent=cues?"The retinal image shrinks a lot, but you still perceive a person of normal size. That is size constancy.":"With the depth cues removed, the brain cannot scale the size back up, so the person seems to shrink as they move away.";
+  }
+  $("#sc-d").addEventListener("input",draw);$("#sc-c").addEventListener("change",draw);draw();
+})();
+
+quiz("quiz-depth",[
+  {q:"A railway track seems to get narrower in the distance. Which cue is this?",o:["Relative size","Linear perspective","Occlusion","Convergence"],a:1,e:"Parallel lines appearing to meet at the horizon is linear perspective."},
+  {q:"A car is partly hidden behind a lorry. You think the car is further away. Which cue?",o:["Occlusion","Height in the plane","Retinal disparity","Linear perspective"],a:0,e:"The object that is blocked is seen as further away."},
+  {q:"Which cue is binocular?",o:["Height in the plane","Relative size","Retinal disparity","Occlusion"],a:2,e:"Retinal disparity needs two eyes. The others work with one."},
+  {q:"As an object comes closer, what happens to convergence?",o:["Eyes turn further inwards","Eyes turn outwards","Nothing changes","Only one eye moves"],a:0,e:"The eyes turn inward more for near objects, and the brain senses the tension."},
+  {q:"Which describes size constancy?",o:["Objects always look the same size on the retina","Perceiving an object as the same size even as its retinal image changes","Seeing far things as smaller","Judging size by colour"],a:1,e:"The retinal image changes but the perceived size stays stable."}
+]);
+
+/* ---- expose helpers to part 2 ---- */
+window.__P={$:$,$$:$$,el:el,rng:rng,css:css,quiz:quiz,sorter:sorter,showTab:showTab,onShow:onShow,TABS:TABS};
+
+/* ================= 3 GIBSON ================= */
+var flowAPI={};
+(function(){
+  var cv=$("#flow"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height,pts=[],raf=0,last=0,running=false,userPaused=false;
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function spawn(p,z){p.x=(Math.random()-.5)*3.2;p.y=(Math.random()-.5)*2.2;p.z=z;return p}
+  for(var i=0;i<170;i++)pts.push(spawn({},Math.random()*0.95+0.05));
+  function proj(x,y,z){return [W/2+x/z*60,H/2+y/z*60]}
+  function render(){
+    ctx.fillStyle=css("--panel");ctx.fillRect(0,0,W,H);
+    var sp=+$("#flow-s").value,streak=sp===0?0.02:0.05*sp;
+    ctx.strokeStyle=css("--a");ctx.lineCap="round";
+    pts.forEach(function(p){
+      var a=proj(p.x,p.y,p.z),b=proj(p.x,p.y,Math.max(0.03,p.z+streak));
+      ctx.lineWidth=Math.min(3.5,0.8+0.25/p.z);ctx.globalAlpha=Math.min(1,0.25+0.15/p.z);
+      ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(a[0],a[1]);ctx.stroke();
+    });
+    ctx.globalAlpha=1;
+    ctx.strokeStyle=css("--b");ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(W/2,H/2,9,0,7);ctx.moveTo(W/2-16,H/2);ctx.lineTo(W/2+16,H/2);ctx.moveTo(W/2,H/2-16);ctx.lineTo(W/2,H/2+16);ctx.stroke();
+    ctx.fillStyle=css("--ink");ctx.font="13px "+css("--f-mono");
+    ctx.fillText(sp>0?"moving forwards: flow expands from here":sp<0?"moving backwards: flow shrinks to here":"standing still: no flow",12,H-14);
+  }
+  function tick(t){
+    if(!running)return;
+    var dt=Math.min(0.05,(t-last)/1000);last=t;
+    var sp=+$("#flow-s").value;
+    pts.forEach(function(p){
+      p.z-=sp*dt*0.3;
+      var a=proj(p.x,p.y,p.z);
+      if(p.z<0.04||p.z>1.05||a[0]<0||a[0]>W||a[1]<0||a[1]>H)spawn(p,sp>=0?1:0.08);
+    });
+    render();raf=requestAnimationFrame(tick);
+  }
+  function start(){if(running)return;running=true;last=performance.now();raf=requestAnimationFrame(tick);$("#flow-btn").textContent="Pause"}
+  function stop(){running=false;cancelAnimationFrame(raf)}
+  flowAPI.stop=stop;
+  flowAPI.show=function(){if(!userPaused&&!reduce)start();else{render();$("#flow-btn").textContent="Play"}};
+  $("#flow-btn").addEventListener("click",function(){
+    if(running){userPaused=true;stop();this.textContent="Play"}else{userPaused=false;start()}
+  });
+  $("#flow-s").addEventListener("input",function(){if(!running)render()});
+  if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener&&matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){setTimeout(render,50)});
+  render();$("#flow-btn").textContent="Play";
+})();
+
+(function(){
+  var svg=$("#par"),raf=0,walking=false;
+  var s='';
+  s+='<rect width="560" height="240" class="f-sky"/>';
+  s+='<g id="pl-far"><polygon points="-150,170 -20,60 80,130 200,40 330,150 440,70 560,140 700,50 760,170" style="fill:var(--a-soft)"/></g>';
+  s+='<rect y="170" width="560" height="70" class="f-ground"/>';
+  s+='<g id="pl-mid">';
+  [-60,90,240,390,540].forEach(function(x,i){
+    s+='<rect x="'+x+'" y="130" width="70" height="52" class="'+(i%2?"fa":"fb2")+'"/><polygon points="'+(x-6)+',130 '+(x+35)+',100 '+(x+76)+',130" class="fi"/><rect x="'+(x+26)+'" y="154" width="18" height="28" class="fpn"/>';
+  });
+  s+='</g><g id="pl-near">';
+  for(var x=-160;x<=720;x+=46)s+='<rect x="'+x+'" y="150" width="12" height="90" class="f-trunk"/>';
+  s+='<rect x="-160" y="172" width="900" height="8" class="f-trunk"/><rect x="-160" y="205" width="900" height="8" class="f-trunk"/>';
+  s+='</g>';
+  svg.innerHTML=s;
+  function set(pos){
+    $("#pl-far").setAttribute("transform","translate("+(-pos*0.1)+",0)");
+    $("#pl-mid").setAttribute("transform","translate("+(-pos*0.4)+",0)");
+    $("#pl-near").setAttribute("transform","translate("+(-pos*1.0)+",0)");
+    $("#par-t").textContent="Since you moved "+Math.abs(pos).toFixed(0)+" units: the fence (nearest) shifted "+Math.abs(pos).toFixed(0)+", the houses shifted "+Math.abs(pos*0.4).toFixed(0)+", the mountains (furthest) shifted "+Math.abs(pos*0.1).toFixed(0)+". The bigger the shift, the closer the object.";
+  }
+  $("#par-s").addEventListener("input",function(){set(+this.value)});
+  function stopW(){walking=false;cancelAnimationFrame(raf);$("#par-btn").textContent="Walk automatically"}
+  $("#par-btn").addEventListener("click",function(){
+    if(walking){stopW();return}
+    walking=true;this.textContent="Stop walking";
+    var t0=performance.now();
+    (function loop(t){
+      if(!walking)return;
+      var pos=100*Math.sin((t-t0)/900);$("#par-s").value=pos;set(pos);raf=requestAnimationFrame(loop);
+    })(t0);
+  });
+  flowAPI.stopW=stopW;
+  set(0);
+})();
+window.__flowStop=function(){flowAPI.stop();flowAPI.stopW()};
+onShow.gibson=function(){flowAPI.show()};
+
+quiz("quiz-gibson",[
+  {q:"Gibson said perception is:",o:["Top-down and indirect","Direct and bottom-up","Based on guesses","Only for pilots"],a:1,e:"Gibson: the environment has enough information, so no inference is needed."},
+  {q:"You walk past a fence and a hill. The fence seems to move faster. This is:",o:["Retinal disparity","Convergence","Motion parallax","Occlusion"],a:2,e:"Near objects appear to move faster than far ones as you move."},
+  {q:"A weakness of Gibson's theory is that it:",o:["Cannot explain illusions","Ignores real-world movement","Only uses artificial stimuli","Needs memory"],a:0,e:"Gibson dismisses illusions as artificial, so the theory cannot really explain them."},
+  {q:"Optic flow is:",o:["The blur when you blink","The pattern of movement in the visual field as you move","A type of binocular cue","A memory"],a:1,e:"As you move forward, everything seems to stream outwards from the point you are heading for."}
+]);
+
+/* ================= 4 GREGORY ================= */
+(function(){
+  var cv=$("#hyp"),ctx=cv.getContext("2d"),off=document.createElement("canvas");off.width=off.height=140;
+  var oc=off.getContext("2d");
+  var DRAW={
+    house:function(c){c.fillRect(28,62,84,60);c.beginPath();c.moveTo(18,62);c.lineTo(70,18);c.lineTo(122,62);c.closePath();c.fill()},
+    mug:function(c){c.fillRect(32,34,62,76);c.lineWidth=11;c.beginPath();c.arc(98,70,20,-1.3,1.3);c.stroke()},
+    tree:function(c){c.fillRect(62,88,16,40);c.beginPath();c.arc(70,56,40,0,7);c.fill()},
+    car:function(c){c.fillRect(12,72,116,32);c.fillRect(38,46,64,28);c.beginPath();c.arc(40,106,15,0,7);c.arc(100,106,15,0,7);c.fill()}
+  };
+  var names=["house","mug","tree","car"],LAB={house:"House",mug:"Mug",tree:"Tree",car:"Car"};
+  var cur,sig=[],noise=[],won=false;
+  function build(){
+    cur=names[Math.floor(Math.random()*names.length)];won=false;
+    oc.clearRect(0,0,140,140);oc.fillStyle="#000";oc.strokeStyle="#000";DRAW[cur](oc);
+    var d=oc.getImageData(0,0,140,140).data;sig=[];
+    for(var y=0;y<140;y+=3)for(var x=0;x<140;x+=3)if(d[(y*140+x)*4+3]>128)sig.push([x,y]);
+    var r=rng(Math.floor(Math.random()*1e9));
+    for(var i=sig.length-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=sig[i];sig[i]=sig[j];sig[j]=t}
+    noise=[];for(var k=0;k<90;k++)noise.push([r()*140,r()*140]);
+    $("#hyp-s").value=4;render();$("#hyp-t").textContent="Make your best guess.";
+  }
+  function render(){
+    var f=+$("#hyp-s").value/100;$("#hyp-v").textContent=Math.round(f*100)+"% of the information";
+    var n=Math.max(1,Math.round(sig.length*f));
+    ctx.fillStyle=css("--panel");ctx.fillRect(0,0,280,280);
+    ctx.fillStyle=css("--ink");
+    for(var i=0;i<n;i++){ctx.beginPath();ctx.arc(sig[i][0]*2,sig[i][1]*2,2.4,0,7);ctx.fill()}
+    ctx.globalAlpha=0.55;
+    noise.forEach(function(p){ctx.beginPath();ctx.arc(p[0]*2,p[1]*2,2.2,0,7);ctx.fill()});
+    ctx.globalAlpha=1;
+  }
+  var opts=$("#hyp-opts");
+  names.forEach(function(nm){
+    var b=el("button","chip",LAB[nm]);
+    b.addEventListener("click",function(){
+      var pct=$("#hyp-s").value;
+      if(nm===cur){$("#hyp-t").textContent="Correct, it is a "+LAB[cur].toLowerCase()+". You got it with "+pct+"% of the information. With so little to go on, your brain used past experience of what houses, mugs, trees and cars look like. That is Gregory's perceptual hypothesis."}
+      else{$("#hyp-t").textContent="Not that one. Your brain made a hypothesis that did not fit. Add more information or try again."}
+    });
+    opts.appendChild(b);
+  });
+  $("#hyp-s").addEventListener("input",render);
+  $("#hyp-new").addEventListener("click",build);
+  if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener&&matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){setTimeout(render,50)});
+  build();
+})();
+quiz("quiz-gregory",[
+  {q:"Gregory said perception is:",o:["Direct and bottom-up","Constructed using inferences and past experience","Only about movement","Not affected by knowledge"],a:1,e:"The brain constructs a model from cues and past experience."},
+  {q:"A perceptual hypothesis is:",o:["A scientist's prediction","The brain's best guess about what the sensory data mean","A type of binocular cue","A wrong perception"],a:1,e:"It is a best guess, which is usually right but sometimes wrong."},
+  {q:"Which theory says illusions are caused by wrong hypotheses?",o:["Gibson","Gregory","Both","Neither"],a:1,e:"Gregory uses illusions as key evidence for his theory."},
+  {q:"Which is a weakness of Gregory's theory?",o:["It cannot explain illusions","It cannot explain why perception is usually fast and accurate","It ignores the brain","It is bottom-up"],a:1,e:"If perception relied on guessing, we would expect more errors than we get."}
+]);
+
+/* ================= 5 ILLUSIONS ================= */
+var INFO={
+ ponzo:{name:"Ponzo illusion",what:"Two identical bars sit between converging lines. The upper bar looks longer.",tags:["Misinterpreted depth cues","Size constancy"],
+   gregory:"The converging lines are a depth cue (linear perspective), so the brain infers the top bar is further away. Both bars make the same size image on the retina, so size constancy scales the 'further' bar up and it looks longer.",
+   gibson:"Gibson would say this is a flat drawing with no real depth. Without motion and binocular cues, the cue is misleading."},
+ mull:{name:"Müller-Lyer illusion",what:"Two lines are the same length, but the line with outward fins looks longer than the line with arrowheads.",tags:["Misinterpreted depth cues","Size constancy"],
+   gregory:"The fins act as depth cues. Arrowheads look like the outside corner of a building (near). Fins look like the inside corner of a room (far). The 'far' line is scaled up by size constancy and looks longer.",
+   gibson:"Gibson would say the 2D drawing removes real-world depth information, so the illusion is artificial."},
+ rubin:{name:"Rubin's vase",what:"Is it a white vase or two black faces looking at each other? You cannot see both at once.",tags:["Ambiguity"],
+   gregory:"The stimulus fits two hypotheses equally well. With no way to decide, the brain switches between them. The figure (what stands out) and the background swap.",
+   gibson:"Gibson would argue this shows a flat picture with insufficient information, which is unlike the real world."},
+ necker:{name:"Necker cube",what:"A wire cube that flips. Sometimes the lower-left square is at the front, sometimes the upper-right.",tags:["Ambiguity"],
+   gregory:"The drawing is consistent with two 3D interpretations. The brain tests one hypothesis, then the other, and they alternate.",
+   gibson:"Gibson would say real cubes have texture, movement and binocular cues that remove the ambiguity."},
+ kanizsa:{name:"Kanizsa triangle",what:"You see a bright white triangle on top of three circles and an outline, but no triangle is drawn.",tags:["Fiction"],
+   gregory:"The brain fills the gaps with a likely explanation: a white triangle in front, covering parts of the circles. The edges are a fiction created by the brain (illusory contours). Occlusion is the cue being used.",
+   gibson:"Gibson would say it is an artificial display with too little information."},
+ ames:{name:"Ames room",what:"Two people of similar height look very different in size when they stand in the corners of a strange room.",tags:["Misinterpreted depth cues","Size constancy"],
+   gregory:"The room is actually trapezoid, with one corner much further away. Viewed with one eye from one spot, it looks like a normal rectangular room. The brain trusts its past experience of rooms, so it assumes both people are at the same distance. The retinal sizes differ, so it concludes one person is bigger.",
+   gibson:"Gibson would say that with both eyes open and movement, motion parallax and binocular cues would expose the room. The illusion only works with a fixed single viewpoint."}
+};
+var ILL=["ponzo","mull","rubin","necker","kanizsa","ames"];
+var cur="ponzo";
+function frame(id,svgBox,controls){
+  var d=INFO[id];
+  var g=el("div","grid2"),l=el("div"),r=el("div");
+  l.style.display="grid";l.style.gap="10px";l.style.alignContent="start";
+  r.style.display="grid";r.style.gap="10px";r.style.alignContent="start";
+  l.innerHTML='<div class="stage-box">'+svgBox+'</div>'+controls;
+  var h=el("h2",null,d.name);r.appendChild(h);r.appendChild(el("p",null,d.what));
+  var ch=el("div","chips");d.tags.forEach(function(t){ch.appendChild(el("span","tag b",t))});r.appendChild(ch);
+  var f1=el("div","fb");f1.innerHTML="<b>Gregory:</b> "+d.gregory;r.appendChild(f1);
+  var f2=el("div","fb");f2.innerHTML="<b>Gibson:</b> "+d.gibson;r.appendChild(f2);
+  g.appendChild(l);g.appendChild(r);return g;
+}
+var stage=$("#ill-stage");
+function renderIll(id){
+  cur=id;stage.textContent="";
+  $$("#ill-chips .chip").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.id===id?"true":"false")});
+  ({ponzo:ponzo,mull:mull,rubin:rubin,necker:necker,kanizsa:kanizsa,ames:ames})[id]();
+}
+ILL.forEach(function(id){
+  var b=el("button","chip",INFO[id].name);b.dataset.id=id;b.setAttribute("aria-pressed","false");
+  b.addEventListener("click",function(){renderIll(id)});$("#ill-chips").appendChild(b);
+});
+
+function ponzo(){
+  var g=frame("ponzo",'<svg class="dia" viewBox="0 0 400 300" id="il-svg" role="img" aria-label="Ponzo illusion"></svg>',
+   '<label class="lab"><span class="k">Top bar length</span><input type="range" id="il-s" min="60" max="140" value="100"><span class="note" id="il-v"></span></label><div class="row"><button class="btn primary" id="il-m">Measure</button></div><div class="fb" id="il-t">Drag until both bars look the same length. Then press Measure.</div>');
+  stage.appendChild(g);
+  var measured=false;
+  function draw(){
+    var L=+$("#il-s").value,s='';
+    s+='<line x1="40" y1="285" x2="170" y2="15" class="sk"/><line x1="360" y1="285" x2="230" y2="15" class="sk"/>';
+    for(var i=1;i<=6;i++){var t=Math.pow(i/6,1.3),y=285-270*t,f=(285-y)/270;s+='<line x1="'+(40+130*f)+'" y1="'+y+'" x2="'+(360-130*f)+'" y2="'+y+'" class="sk" style="stroke:var(--line)" stroke-width="1.5"/>'}
+    s+='<line x1="'+(200-L/2)+'" y1="70" x2="'+(200+L/2)+'" y2="70" class="skb" stroke-width="7"/><line x1="150" y1="240" x2="250" y2="240" class="ska" stroke-width="7"/>';
+    if(measured){s+='<line x1="150" y1="50" x2="150" y2="262" stroke-dasharray="4 4" class="sk"/><line x1="250" y1="50" x2="250" y2="262" stroke-dasharray="4 4" class="sk"/>'}
+    $("#il-svg").innerHTML=s;$("#il-v").textContent=L+" units (lower bar is 100)";
+  }
+  $("#il-s").addEventListener("input",function(){measured=false;draw()});
+  $("#il-m").addEventListener("click",function(){
+    measured=true;draw();var L=+$("#il-s").value;
+    $("#il-t").textContent=L===100?"Both bars are exactly 100 units. They are the same length, but the top one looks longer.":"You set the top bar to "+L+" units and the lower bar is 100. When both are 100 they are equal. You had to change the top one by "+Math.abs(100-L)+" units to make them look the same, which shows how strong the illusion is.";
+  });
+  draw();
+}
+function mull(){
+  var g=frame("mull",'<svg class="dia" viewBox="0 0 400 240" id="il-svg" role="img" aria-label="Müller-Lyer illusion"></svg>',
+   '<label class="lab"><span class="k">Top line length</span><input type="range" id="il-s" min="140" max="260" value="200"><span class="note" id="il-v"></span></label><div class="row"><button class="btn primary" id="il-m">Measure</button></div><div class="fb" id="il-t">Change the top line until it looks as long as the bottom line. Then press Measure.</div>');
+  stage.appendChild(g);var measured=false;
+  function draw(){
+    var L=+$("#il-s").value,x1=100,x2=100+L,s='';
+    s+='<line x1="'+x1+'" y1="70" x2="'+x2+'" y2="70" class="ska" stroke-width="5"/>';
+    s+='<line x1="'+x1+'" y1="70" x2="'+(x1+18)+'" y2="54" class="ska" stroke-width="5"/><line x1="'+x1+'" y1="70" x2="'+(x1+18)+'" y2="86" class="ska" stroke-width="5"/>';
+    s+='<line x1="'+x2+'" y1="70" x2="'+(x2-18)+'" y2="54" class="ska" stroke-width="5"/><line x1="'+x2+'" y1="70" x2="'+(x2-18)+'" y2="86" class="ska" stroke-width="5"/>';
+    s+='<line x1="100" y1="170" x2="300" y2="170" class="skb" stroke-width="5"/>';
+    s+='<line x1="100" y1="170" x2="82" y2="154" class="skb" stroke-width="5"/><line x1="100" y1="170" x2="82" y2="186" class="skb" stroke-width="5"/>';
+    s+='<line x1="300" y1="170" x2="318" y2="154" class="skb" stroke-width="5"/><line x1="300" y1="170" x2="318" y2="186" class="skb" stroke-width="5"/>';
+    if(measured){s+='<line x1="100" y1="30" x2="100" y2="210" stroke-dasharray="4 4" class="sk"/><line x1="300" y1="30" x2="300" y2="210" stroke-dasharray="4 4" class="sk"/>'}
+    $("#il-svg").innerHTML=s;$("#il-v").textContent=L+" units (bottom line is 200)";
+  }
+  $("#il-s").addEventListener("input",function(){measured=false;draw()});
+  $("#il-m").addEventListener("click",function(){
+    measured=true;draw();var L=+$("#il-s").value;
+    $("#il-t").textContent=L===200?"Both lines are exactly 200 units. They are equal even though the bottom one looks longer.":"You set the top line to "+L+" units. The bottom line is 200. When both are 200 they are equal, so the fins changed how long you perceived them to be by about "+Math.abs(200-L)+" units.";
+  });
+  draw();
+}
+function rubin(){
+  var g=frame("rubin",'<svg class="dia" viewBox="0 0 300 300" id="il-svg" role="img" aria-label="Rubin vase"></svg>',
+   '<div class="chips"><button class="chip" data-m="vase" aria-pressed="false">Highlight the vase</button><button class="chip" data-m="faces" aria-pressed="false">Highlight the faces</button><button class="chip" data-m="none" aria-pressed="true">Clear</button></div><div class="fb" id="il-t">Look at the picture. Can you hold both at once?</div>');
+  stage.appendChild(g);
+  var KP=[[0,40],[.06,40],[.14,30],[.2,38],[.28,34],[.34,22],[.4,34],[.46,28],[.52,36],[.58,28],[.64,38],[.72,26],[.82,42],[.9,48],[1,56]];
+  function w(t){for(var i=0;i<KP.length-1;i++){if(t<=KP[i+1][0]){var a=KP[i],b=KP[i+1],u=(t-a[0])/(b[0]-a[0]),c=(1-Math.cos(u*Math.PI))/2;return a[1]+(b[1]-a[1])*c}}return KP[KP.length-1][1]}
+  var cx=150,y0=20,y1=280,L=[],R=[];
+  for(var y=y0;y<=y1;y+=4){var t=(y-y0)/(y1-y0),ww=w(t);L.push([cx-ww,y]);R.push([cx+ww,y])}
+  function pts(a){return a.map(function(p){return p[0].toFixed(1)+","+p[1]}).join(" ")}
+  var vase=pts(L.concat(R.slice().reverse()));
+  var lf=pts(L.concat([[0,y1],[0,y0]])),rf=pts(R.concat([[300,y1],[300,y0]]));
+  var mode="none";
+  function draw(){
+    var s='<rect width="300" height="300" rx="8" style="fill:#12132a"/>';
+    if(mode==="faces"){s+='<polygon points="'+lf+'" style="fill:var(--a)"/><polygon points="'+rf+'" style="fill:var(--a)"/>';}
+    s+='<polygon points="'+vase+'" style="fill:'+(mode==="vase"?"var(--b)":"#f5f5fa")+'"/>';
+    $("#il-svg").innerHTML=s;
+  }
+  $$("[data-m]").forEach(function(b){b.addEventListener("click",function(){
+    mode=b.dataset.m;$$("[data-m]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});draw();
+    $("#il-t").textContent=mode==="vase"?"The vase is the figure and the faces are the background.":mode==="faces"?"Now the faces are the figure and the vase is the background. The picture has not changed, only your hypothesis.":"Both are always possible. The brain cannot choose, so it flips.";
+  })});
+  draw();
+}
+function necker(){
+  var g=frame("necker",'<svg class="dia" viewBox="0 0 300 280" id="il-svg" role="img" aria-label="Necker cube"></svg>',
+   '<div class="chips"><button class="chip" data-f="a" aria-pressed="true">Lower-left square at the front</button><button class="chip" data-f="b" aria-pressed="false">Upper-right square at the front</button></div><div class="fb" id="il-t">Switch between the two. Can you make the cube flip by itself just by staring?</div>');
+  stage.appendChild(g);var f="a",flips=0;
+  function draw(){
+    var A=[[60,100],[180,100],[180,220],[60,220]],B=[[120,40],[240,40],[240,160],[120,160]];
+    function P(a){return a.map(function(p){return p.join(",")}).join(" ")}
+    var s='';
+    s+='<polygon points="'+P(f==="a"?A:B)+'" style="fill:var(--b);fill-opacity:.4"/>';
+    s+='<polygon points="'+P(A)+'" class="sk" stroke-width="4"/><polygon points="'+P(B)+'" class="sk" stroke-width="4"/>';
+    for(var i=0;i<4;i++)s+='<line x1="'+A[i][0]+'" y1="'+A[i][1]+'" x2="'+B[i][0]+'" y2="'+B[i][1]+'" class="sk" stroke-width="4"/>';
+    $("#il-svg").innerHTML=s;
+  }
+  $$("[data-f]").forEach(function(b){b.addEventListener("click",function(){
+    if(f!==b.dataset.f)flips++;f=b.dataset.f;
+    $$("[data-f]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});draw();
+    $("#il-t").textContent="The highlighted square is the front face. You have switched "+flips+" time"+(flips===1?"":"s")+". Both are equally likely, so the brain flips between hypotheses.";
+  })});
+  draw();
+}
+function kanizsa(){
+  var g=frame("kanizsa",'<svg class="dia" viewBox="0 0 320 290" id="il-svg" role="img" aria-label="Kanizsa triangle"></svg>',
+   '<label class="lab"><span class="k">Turn the pac-man shapes</span><input type="range" id="il-s" min="0" max="180" value="0"><span class="note" id="il-v"></span></label><label class="chk"><input type="checkbox" id="il-o"> <span>Show the missing outline</span></label><div class="fb" id="il-t"></div>');
+  stage.appendChild(g);
+  var V=[[160,50],[70,205],[250,205]],cen=[160,153];
+  function draw(){
+    var rot=+$("#il-s").value,r=34,s='';
+    V.forEach(function(v){
+      var th=Math.atan2(cen[1]-v[1],cen[0]-v[0])+rot*Math.PI/180,h=Math.PI/6;
+      var x1=v[0]+r*Math.cos(th+h),y1=v[1]+r*Math.sin(th+h),x2=v[0]+r*Math.cos(th-h),y2=v[1]+r*Math.sin(th-h);
+      s+='<path d="M'+v[0]+','+v[1]+' L'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 1 1 '+x2.toFixed(1)+','+y2.toFixed(1)+' Z" class="fi"/>';
+    });
+    if($("#il-o").checked)s+='<polygon points="'+V.map(function(v){return v.join(",")}).join(" ")+'" class="skb" stroke-dasharray="5 5"/>';
+    $("#il-svg").innerHTML=s;
+    $("#il-v").textContent=rot+"° turned";
+    $("#il-t").textContent=rot<12?"You see a white triangle on top, with sharp edges. Run your eye along the edges: nothing is drawn there.":"As the shapes turn, the edges no longer line up, so the brain drops the triangle hypothesis.";
+  }
+  $("#il-s").addEventListener("input",draw);$("#il-o").addEventListener("change",draw);draw();
+}
+function ames(){
+  var g=frame("ames",'<svg class="dia" viewBox="0 0 400 260" id="il-svg" role="img" aria-label="View into the Ames room"></svg>',
+   '<label class="lab"><span class="k">Person B walks from the left corner to the right corner</span><input type="range" id="il-s" min="0" max="100" value="0"></label><div class="row"><button class="btn primary" id="il-m">Reveal the real room</button></div><div class="stage-box" id="il-top" hidden><svg class="dia" viewBox="0 0 400 300" id="il-svg2" role="img" aria-label="Top-down view of the Ames room"></svg></div><div class="fb" id="il-t"></div>');
+  stage.appendChild(g);
+  var FL=[60,30],NR=[340,150],EYE=[200,285],revealed=false;
+  function dist(p){return Math.hypot(p[0]-EYE[0],p[1]-EYE[1])}
+  function person(cx,base,h,fill){
+    var hd=h*0.14,bd=h*0.5,lg=h*0.36;
+    return '<circle cx="'+cx+'" cy="'+(base-h+hd)+'" r="'+hd+'" class="'+fill+'"/><rect x="'+(cx-hd*1.2)+'" y="'+(base-h+hd*2)+'" width="'+(hd*2.4)+'" height="'+bd+'" rx="4" class="'+fill+'"/><rect x="'+(cx-hd)+'" y="'+(base-lg)+'" width="'+(hd*.8)+'" height="'+lg+'" class="'+fill+'"/><rect x="'+(cx+hd*.2)+'" y="'+(base-lg)+'" width="'+(hd*.8)+'" height="'+lg+'" class="'+fill+'"/>';
+  }
+  function draw(){
+    var p=+$("#il-s").value/100;
+    var B=[FL[0]+(NR[0]-FL[0])*p,FL[1]+(NR[1]-FL[1])*p];
+    var ratio=dist(NR)/dist(B);
+    var s='<rect x="60" y="50" width="280" height="150" class="f-sky"/><polygon points="60,200 340,200 390,250 10,250" class="f-ground"/>';
+    s+='<polygon points="60,50 340,50 390,10 10,10" style="fill:var(--a-soft)"/>';
+    s+='<line x1="60" y1="50" x2="10" y2="10" class="sk"/><line x1="340" y1="50" x2="390" y2="10" class="sk"/><line x1="60" y1="200" x2="10" y2="250" class="sk"/><line x1="340" y1="200" x2="390" y2="250" class="sk"/><rect x="60" y="50" width="280" height="150" class="sk"/>';
+    s+='<rect x="110" y="80" width="40" height="40" class="fpn sk"/><rect x="250" y="80" width="40" height="40" class="fpn sk"/>';
+    var bx=110+180*p;
+    s+=person(bx,200,140*ratio,"fb2")+person(300,200,140,"fa");
+    s+='<text x="'+bx+'" y="'+(200-140*ratio-8)+'" text-anchor="middle" class="st">B</text><text x="300" y="52" text-anchor="middle" class="st" style="fill:var(--ink)">A</text>';
+    $("#il-svg").innerHTML=s;
+    var t=Math.round(ratio*100);
+    $("#il-t").textContent="B's image is "+t+"% the height of A's. Both are really the same height. The brain assumes the room is rectangular, so it reads the smaller image as a smaller person instead of a person who is further away.";
+    var s2='<polygon points="'+FL.join(",")+' '+NR.join(",")+' 300,270 110,270" class="fpn sk"/>';
+    s2+='<line x1="'+EYE[0]+'" y1="'+EYE[1]+'" x2="'+FL[0]+'" y2="'+FL[1]+'" stroke-dasharray="3 5" class="sk"/><line x1="'+EYE[0]+'" y1="'+EYE[1]+'" x2="'+NR[0]+'" y2="'+NR[1]+'" stroke-dasharray="3 5" class="sk"/>';
+    s2+='<circle cx="'+EYE[0]+'" cy="'+(EYE[1]-4)+'" r="9" class="fi"/><text x="'+EYE[0]+'" y="298" text-anchor="middle" class="stm">peephole</text>';
+    s2+='<circle cx="'+NR[0]+'" cy="'+NR[1]+'" r="10" class="fa"/><circle cx="'+B[0].toFixed(0)+'" cy="'+B[1].toFixed(0)+'" r="10" class="fb2"/>';
+    s2+='<text x="'+(B[0]+14)+'" y="'+(B[1]-10)+'" class="st">B</text><text x="'+(NR[0]-6)+'" y="'+(NR[1]+26)+'" class="st">A</text>';
+    s2+='<text x="200" y="14" text-anchor="middle" class="stm">the back wall slants away to the left</text>';
+    $("#il-svg2").innerHTML=s2;
+  }
+  $("#il-s").addEventListener("input",draw);
+  $("#il-m").addEventListener("click",function(){
+    revealed=!revealed;$("#il-top").hidden=!revealed;this.textContent=revealed?"Hide the real room":"Reveal the real room";
+  });
+  draw();
+}
+renderIll("ponzo");
+quiz("quiz-ill",[
+  {q:"Which illusion is best explained by ambiguity?",o:["Ponzo","Müller-Lyer","Rubin's vase","Ames room"],a:2,e:"Rubin's vase has two equally likely interpretations, so perception flips."},
+  {q:"The Kanizsa triangle is explained by:",o:["Fiction","Size constancy","Ambiguity","Convergence"],a:0,e:"The brain creates edges that are not there."},
+  {q:"In the Ponzo illusion, why does the upper bar look longer?",o:["It is longer","Converging lines suggest it is further, so the brain scales it up","Colour makes it bigger","The eyes converge more"],a:1,e:"Linear perspective plus size constancy."},
+  {q:"In the Ames room, one person looks much bigger because:",o:["They are taller","The brain assumes the room is rectangular, so distance is misjudged","The floor is sloped","Lighting is different"],a:1,e:"Misinterpreted depth cues, then size constancy."},
+  {q:"Which illusion is NOT explained mainly by misinterpreted depth cues?",o:["Ponzo","Müller-Lyer","Necker cube","Ames room"],a:2,e:"The Necker cube is ambiguity."}
+]);
+onShow.ill=function(){};
+
+/* ================= 6 PERCEPTUAL SET ================= */
+(function(){
+  var SETS=[["expect","Expectation"],["motive","Motivation"],["emotion","Emotion"],["culture","Culture"]];
+  var chips=$("#set-chips");
+  function show(k){
+    SETS.forEach(function(s){$("#set-"+s[0]).hidden=(s[0]!==k)});
+    $$("#set-chips .chip").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.k===k?"true":"false")});
+  }
+  SETS.forEach(function(s){var b=el("button","chip",s[1]);b.dataset.k=s[0];b.setAttribute("aria-pressed","false");b.addEventListener("click",function(){show(s[0])});chips.appendChild(b)});
+  show("expect");
+})();
+
+(function(){ /* Bruner and Minturn */
+  var svg=$("#bm-svg"),ctxm="letters";
+  function glyph(){return '<g transform="translate(112,16)" class="sk" stroke-width="7" style="stroke:var(--b)"><line x1="6" y1="4" x2="6" y2="64"/><path d="M22,4 H34 C60,4 60,32 34,32 H22 M22,32 H36 C66,32 66,64 36,64 H22"/></g>'}
+  function draw(){
+    var s='';
+    if(ctxm==="letters")s+='<text x="20" y="74" font-size="60" font-weight="800" class="fi">A</text>'+glyph()+'<text x="226" y="74" font-size="60" font-weight="800" class="fi">C</text>';
+    else s+='<text x="4" y="74" font-size="60" font-weight="800" class="fi">12</text>'+glyph()+'<text x="214" y="74" font-size="60" font-weight="800" class="fi">14</text>';
+    svg.innerHTML=s;
+    $("#bm-t").textContent=ctxm==="letters"?"The middle shape sits between letters. Participants expected a letter and tended to report B.":"The middle shape sits between numbers. Participants expected a number and tended to report 13.";
+  }
+  $$("[data-bm]").forEach(function(b){b.addEventListener("click",function(){
+    ctxm=b.dataset.bm;$$("[data-bm]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});draw();
+  })});
+  draw();
+  var PH=["PARIS IN THE THE SPRING","A BIRD IN THE THE HAND","ONCE IN A A LIFETIME"],WD=["THE","THE","A"],pi=-1;
+  function next(){
+    pi=(pi+1)%PH.length;$("#dw-phrase").textContent=PH[pi];$("#dw-t").hidden=true;
+    var o=$("#dw-opts");o.textContent="";
+    ["Once","Twice"].forEach(function(t,i){
+      var b=el("button","btn",WD[pi]+" appears "+t.toLowerCase());
+      b.addEventListener("click",function(){
+        $("#dw-t").hidden=false;
+        $("#dw-t").textContent=(i===1?"Well spotted. ":"Most people say this. ")+"The word "+WD[pi]+" appears twice. Because we expect a familiar phrase, we tend to read it as the version we know. That is expectation shaping perception.";
+      });
+      o.appendChild(b);
+    });
+    var n=el("button","btn","Another phrase");n.addEventListener("click",next);o.appendChild(n);
+  }
+  next();
+})();
+
+(function(){ /* Gilchrist and Nesberg */
+  function draw(){
+    var h=+$("#gn-s").value;$("#gn-v").textContent=h+" hours";
+    $("#gn-f").style.width=(50+h*2)+"%";$("#gn-n").style.width="50%";
+  }
+  $("#gn-s").addEventListener("input",draw);draw();
+})();
+
+(function(){ /* Kunst-Wilson and Zajonc mini experiment */
+  var svg=$("#kw-svg"),t=$("#kw-t"),timers=[],old=[11,22,33,44,55],nw=[66,77,88,99,111],pairs=[],pi=0,liked=0,seen=0,likedNow=null;
+  var opts=el("div","row");t.parentNode.insertBefore(opts,t.nextSibling);
+  function poly(seed,cx,cy){
+    var r=rng(seed),p=[];
+    for(var k=0;k<8;k++){var a=k*Math.PI/4+(r()-.5)*.55,rad=22+r()*34;p.push((cx+rad*Math.cos(a)).toFixed(1)+","+(cy+rad*Math.sin(a)).toFixed(1))}
+    return '<polygon points="'+p.join(" ")+'" class="fi"/>';
+  }
+  function clearT(){timers.forEach(clearTimeout);timers=[]}
+  function blank(){svg.innerHTML='<text x="200" y="95" text-anchor="middle" class="stm">+</text>'}
+  blank();
+  $("#kw-start").addEventListener("click",function(){
+    clearT();opts.textContent="";liked=0;seen=0;pi=0;
+    var seq=[];old.forEach(function(s){seq.push(s,s)});
+    var r=rng(Date.now()&0xffff);seq.sort(function(){return r()-.5});
+    t.textContent="Watch the centre. Shapes will flash very quickly.";
+    var at=900;
+    seq.forEach(function(s){
+      timers.push(setTimeout(function(){svg.innerHTML=poly(s,200,90)},at));
+      timers.push(setTimeout(blank,at+80));at+=700;
+    });
+    timers.push(setTimeout(function(){
+      pairs=old.map(function(o,i){return {o:o,n:nw[i],oldLeft:r()<.5}});
+      pairs.sort(function(){return r()-.5});pi=0;ask();
+    },at+200));
+  });
+  function ask(){
+    if(pi>=pairs.length){finish();return}
+    var p=pairs[pi];
+    svg.innerHTML=poly(p.oldLeft?p.o:p.n,110,90)+poly(p.oldLeft?p.n:p.o,290,90);
+    likedNow=null;stage1();
+  }
+  function stage1(){
+    t.textContent="Pair "+(pi+1)+" of "+pairs.length+": which do you LIKE more?";
+    opts.textContent="";
+    [["Left shape",true],["Right shape",false]].forEach(function(o){
+      var b=el("button","btn",o[0]);
+      b.addEventListener("click",function(){
+        var p=pairs[pi],pickedOld=(o[1]===p.oldLeft);if(pickedOld)liked++;stage2();
+      });opts.appendChild(b);
+    });
+  }
+  function stage2(){
+    t.textContent="Pair "+(pi+1)+" of "+pairs.length+": which did you SEE before?";
+    opts.textContent="";
+    [["Left shape",true],["Right shape",false]].forEach(function(o){
+      var b=el("button","btn",o[0]);
+      b.addEventListener("click",function(){
+        var p=pairs[pi];if(o[1]===p.oldLeft)seen++;pi++;ask();
+      });opts.appendChild(b);
+    });
+  }
+  function finish(){
+    opts.textContent="";blank();
+    t.textContent="Your results: you liked the old shape in "+liked+" of 5 pairs, and correctly said which was old in "+seen+" of 5. In the real study people liked old shapes about 60% of the time but recognised them only about 48% of the time (chance). Five trials is too few to see this clearly, but it shows how the test works.";
+  }
+})();
+
+(function(){ /* Nisbett and Miyamoto */
+  var svg=$("#fish"),mode="analytic";
+  function fish(cx,cy,s,fill,id){
+    return '<g id="'+id+'"><ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(34*s)+'" ry="'+(18*s)+'" class="'+fill+'"/><polygon points="'+(cx-30*s)+','+cy+' '+(cx-52*s)+','+(cy-14*s)+' '+(cx-52*s)+','+(cy+14*s)+'" class="'+fill+'"/><circle cx="'+(cx+16*s)+'" cy="'+(cy-4*s)+'" r="'+(3*s)+'" class="fpa"/></g>';
+  }
+  function draw(){
+    var an=mode==="analytic",op=an?0.28:1;
+    var s='<rect width="400" height="240" rx="8" class="f-sky"/>';
+    s+='<g opacity="'+op+'"><rect y="205" width="400" height="35" class="f-ground"/><path d="M40,205 q-8,-40 4,-70 M60,205 q10,-30 -2,-60 M340,205 q-8,-40 4,-70 M360,205 q10,-30 -2,-60" class="sk" style="stroke:var(--tree)" stroke-width="4"/><ellipse cx="130" cy="214" rx="28" ry="12" style="fill:var(--road)"/><circle cx="290" cy="60" r="5" class="fpa"/><circle cx="305" cy="40" r="3" class="fpa"/></g>';
+    s+='<g opacity="'+op+'">'+fish(80,70,0.6,"fa","f1")+fish(320,130,0.55,"fa","f2")+fish(110,170,0.5,"fa","f3")+'</g>';
+    s+=fish(210,115,1.3,"fb2","f0");
+    if(an)s+='<ellipse cx="205" cy="115" rx="80" ry="40" class="sk" stroke-dasharray="5 4"/>';
+    else{
+      s+='<line x1="210" y1="115" x2="80" y2="70" class="sk" stroke-dasharray="4 4"/><line x1="210" y1="115" x2="320" y2="130" class="sk" stroke-dasharray="4 4"/><line x1="210" y1="115" x2="110" y2="170" class="sk" stroke-dasharray="4 4"/><line x1="210" y1="115" x2="130" y2="214" class="sk" stroke-dasharray="4 4"/><line x1="210" y1="115" x2="50" y2="160" class="sk" stroke-dasharray="4 4"/>';
+    }
+    svg.innerHTML=s;
+    $("#fish-t").textContent=an?"Analytic perception: attention goes to the main object, the big fish, separate from the background.":"Holistic perception: attention goes to the whole scene and the relationships between the fish, plants and rocks. East Asian participants tended to describe more of the context.";
+  }
+  $$("[data-fish]").forEach(function(b){b.addEventListener("click",function(){
+    mode=b.dataset.fish;$$("[data-fish]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});draw();
+  })});
+  draw();
+
+  /* frame and line */
+  var fsvg=$("#fl-svg"),fm="abs",stageN=1,S2=160,L1=55,F1=110;
+  function frameSvg(side,line,ghost){
+    var x=110-side/2,y=110-side/2,s='<rect x="'+x+'" y="'+y+'" width="'+side+'" height="'+side+'" class="sk" stroke-width="3"/>';
+    if(ghost!=null)s+='<line x1="110" y1="'+y+'" x2="110" y2="'+(y+ghost)+'" class="skb" stroke-dasharray="5 4" stroke-width="4"/>';
+    if(line!=null)s+='<line x1="110" y1="'+y+'" x2="110" y2="'+(y+line)+'" class="ska" stroke-width="4"/>';
+    return s;
+  }
+  function stage1(){
+    stageN=1;fsvg.innerHTML=frameSvg(F1,L1);
+    $("#fl-lab").hidden=true;$("#fl-check").hidden=true;$("#fl-next").hidden=false;$("#fl-next").textContent="Show the new frame";
+    $("#fl-t").textContent="Look at the line hanging inside this frame. Choose a task type, then press the button.";
+  }
+  $("#fl-next").addEventListener("click",function(){
+    S2=[70,160][Math.floor(Math.random()*2)];
+    stageN=2;$("#fl-lab").hidden=false;$("#fl-check").hidden=false;this.hidden=true;
+    $("#fl-s").value=60;fsvg.innerHTML=frameSvg(S2,60);
+    $("#fl-t").textContent=fm==="abs"?"Absolute task: draw the line the same length as before ("+"as you remember it).":"Relative task: draw the line so it fills the same proportion of this frame as before.";
+  });
+  $("#fl-s").addEventListener("input",function(){fsvg.innerHTML=frameSvg(S2,+this.value)});
+  $("#fl-check").addEventListener("click",function(){
+    var ans=+$("#fl-s").value,right=fm==="abs"?L1:L1*S2/F1;
+    fsvg.innerHTML=frameSvg(S2,ans,right);
+    $("#fl-t").textContent="You drew "+ans+". The correct "+(fm==="abs"?"absolute":"relative")+" length was "+Math.round(right)+" (dashed). Off by "+Math.abs(Math.round(ans-right))+". The original frame was 110 wide with a line of 55, so the relative answer is half the frame height.";
+    this.hidden=true;$("#fl-next").hidden=false;$("#fl-next").textContent="Try again";
+    $("#fl-lab").hidden=true;
+  });
+  $$("[data-flm]").forEach(function(b){b.addEventListener("click",function(){
+    fm=b.dataset.flm;$$("[data-flm]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});stage1();
+  })});
+  stage1();
+})();
+
+quiz("quiz-set",[
+  {q:"Perceptual set is:",o:["A set of eye muscles","A mental readiness to perceive in a particular way","A test for colour blindness","A type of depth cue"],a:1,e:"It is shaped by expectation, motivation, emotion and culture."},
+  {q:"Bruner and Minturn: participants shown letters first saw the ambiguous shape as:",o:["13","B","A","C"],a:1,e:"They expected a letter. Participants shown numbers saw 13."},
+  {q:"Gilchrist and Nesberg found that hungry or thirsty participants:",o:["Rated need-related pictures as brighter","Could not see the pictures","Rated all pictures dimmer","Showed no change"],a:0,e:"Motivation changed perception of need-related items."},
+  {q:"Kunst-Wilson and Zajonc found that people:",o:["Remembered the old shapes well","Liked old shapes more, but could not tell which they had seen","Disliked old shapes","Recognised all shapes"],a:1,e:"Liking was above chance (about 60%) but recognition was at chance (about 48%)."},
+  {q:"Nisbett and Miyamoto suggest that, compared with Americans, Japanese participants tend to be more:",o:["Analytic","Holistic, noticing context","Literal","Motivated"],a:1,e:"East Asian participants tend to attend to context and relationships."}
+]);
+
+/* ================= 7 TEST ================= */
+sorter("sort-theory",[
+  ["Perception is bottom-up","G","Starts from the sensory information."],
+  ["Perception uses past experience to form a hypothesis","R","Top-down."],
+  ["Optic flow gives information about movement","G",""],
+  ["Illusions are wrong hypotheses","R",""],
+  ["Illusions are artificial and rare in real life","G","Gibson's response."],
+  ["Motion parallax gives depth information directly","G",""],
+  ["Perception is a best guess","R",""],
+  ["No inference is needed","G",""]
+],[["Gibson","G"],["Gregory","R"]]);
+sorter("sort-cue",[
+  ["Height in the plane","M",""],["Retinal disparity","B","Needs two eyes."],["Convergence","B","Eye muscles turning inwards."],
+  ["Occlusion","M",""],["Linear perspective","M",""],["Relative size","M",""]
+],[["Monocular","M"],["Binocular","B"]]);
+sorter("sort-factor",[
+  ["Nisbett and Miyamoto","C",""],["Gilchrist and Nesberg","M",""],["Kunst-Wilson and Zajonc","E",""],["Bruner and Minturn","X",""],
+  ["People shown letters see an ambiguous shape as B","X",""],["Hungry people rate food pictures as brighter","M",""],
+  ["Liking shapes seen before without knowing it","E",""],["East Asian participants focus more on context","C",""]
+],[["Expectation","X"],["Motivation","M"],["Emotion","E"],["Culture","C"]]);
+sorter("sort-ill",[
+  ["Rubin's vase flips between a vase and two faces","A",""],["Kanizsa triangle: you see a triangle that is not drawn","F",""],
+  ["Ponzo: converging lines make one bar look longer","D",""],["The Necker cube flips depth","A",""],
+  ["Ames room: people seem to change size","D",""],["Müller-Lyer: the fins change how long a line looks","D",""]
+],[["Ambiguity","A"],["Misinterpreted depth cues","D"],["Fiction","F"]]);
+
+quiz("quiz-mix",[
+  {q:"Which of these is sensation rather than perception?",o:["Recognising a face","Receptors in the eye firing","Judging distance","Reading a word"],a:1,e:"Sensation is detection. The others involve interpretation."},
+  {q:"Retinal disparity is:",o:["A difference between the images in the two eyes","The eyes turning inwards","Objects getting smaller with distance","Parallel lines meeting"],a:0,e:"A bigger difference means closer."},
+  {q:"Which cue is binocular?",o:["Occlusion","Convergence","Linear perspective","Relative size"],a:1,e:"Convergence uses both eyes."},
+  {q:"Gibson's theory is best described as:",o:["Top-down","Direct and bottom-up","Hypothesis testing","Based on memory"],a:1,e:"The optic array contains enough information."},
+  {q:"Gregory's theory is best described as:",o:["Top-down and constructive","Bottom-up","Direct","Based only on movement"],a:0,e:"Perception is a best guess using experience."},
+  {q:"Which illusion is explained by fiction?",o:["Kanizsa triangle","Ponzo","Ames room","Necker cube"],a:0,e:"The brain creates edges that are not there."},
+  {q:"The Necker cube flips because of:",o:["Ambiguity","Size constancy","Fiction","Motion parallax"],a:0,e:"Two equally good interpretations."},
+  {q:"A person walks away and seems to stay the same size. This is:",o:["Retinal disparity","Size constancy","Convergence","Fiction"],a:1,e:"The brain scales for distance."},
+  {q:"Which study is about motivation?",o:["Gilchrist and Nesberg","Bruner and Minturn","Kunst-Wilson and Zajonc","Nisbett and Miyamoto"],a:0,e:"Hunger and thirst changed brightness judgements."},
+  {q:"Which study is about culture?",o:["Bruner and Minturn","Nisbett and Miyamoto","Gilchrist and Nesberg","Kunst-Wilson and Zajonc"],a:1,e:"Holistic versus analytic perception."},
+  {q:"Motion parallax means:",o:["Near things seem to move faster than far things as you move","Both eyes see different images","Things get smaller with distance","Lines converge"],a:0,e:"A depth cue from your own movement."},
+  {q:"The Müller-Lyer illusion is mainly explained by:",o:["Misinterpreted depth cues","Fiction","Emotion","Motivation"],a:0,e:"The fins act as depth cues for corners."}
+]);
+
+(function(){
+  var EX=[
+    {q:"Outline what is meant by perceptual set. (2 marks)",a:"A mental readiness or expectation to perceive something in a particular way (1). It is caused by factors such as expectation, motivation, emotion or culture (1)."},
+    {q:"Describe how the Ponzo illusion can be explained by misinterpreted depth cues. (3 marks)",a:"The converging lines act as the depth cue of linear perspective (1). This makes the upper bar seem further away (1). Both bars make the same size retinal image, so the brain scales up the 'further' one using size constancy and it looks longer (1)."},
+    {q:"Describe the study by Bruner and Minturn (1955). (4 marks)",a:"Aim: to see whether expectation affects perception (1). Method: participants were shown an ambiguous figure that could be B or 13, either in a sequence of letters or a sequence of numbers (1). Result: those shown letters saw B, those shown numbers saw 13 (1). Conclusion: expectation (perceptual set) affects what we perceive (1)."},
+    {q:"Evaluate Gibson's direct theory of perception. (4 marks)",a:"Strength: it has real-world applications, for example pilot training uses optic flow (1), and it explains everyday movement and depth quickly because information in the environment is rich (1). Weakness: it cannot explain illusions, which Gibson says are artificial (1), and it ignores the role of memory and expectation shown by perceptual set (1)."}
+  ];
+  var box=$("#exam");
+  EX.forEach(function(d,i){
+    var w=el("div");w.style.display="grid";w.style.gap="8px";
+    w.appendChild(el("p",null,(i+1)+". "+d.q));
+    var ta=document.createElement("textarea");ta.id="ex-"+i;ta.rows=4;ta.placeholder="Write your answer here. It is not saved or sent anywhere.";
+    ta.style.cssText="width:100%;font:inherit;padding:10px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px";
+    w.appendChild(ta);
+    var b=el("button","btn","Show model answer");b.style.width="fit-content";b.setAttribute("aria-expanded","false");
+    var m=el("div","fb");m.hidden=true;m.innerHTML="<b>Model answer:</b> "+d.a;
+    b.addEventListener("click",function(){m.hidden=!m.hidden;b.textContent=m.hidden?"Show model answer":"Hide model answer";b.setAttribute("aria-expanded",m.hidden?"false":"true")});
+    w.appendChild(b);w.appendChild(m);box.appendChild(w);
+  });
+})();
+
+/* ---------- start ---------- */
+var h=(location.hash||"").replace("#","");
+if(TABS.indexOf(h)>0)showTab(h);
+})();
+</script>
+
+</body></html>
